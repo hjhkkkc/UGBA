@@ -1,8 +1,12 @@
+# 导入 argparse 库，用于解析命令行参数
 import argparse
 import numpy as np
 import torch
+
+# 导入 torch_geometric 的数据集，用于图形数据和网络结构学习
 from torch_geometric.datasets import Planetoid,Reddit2,Flickr
 
+# 导入 ogb.nodeproppred，提供基于PyTorch Geometric的节点属性预测数据集
 from ogb.nodeproppred import PygNodePropPredDataset
 from help_funcs import prune_unrelated_edge,prune_unrelated_edge_isolated
 
@@ -56,18 +60,22 @@ parser.add_argument('--evaluate_mode', type=str, default='1by1',
 parser.add_argument('--device_id', type=int, default=2,
                     help="Threshold of prunning edges")
 # args = parser.parse_args()
+
+# 解析命令行参数
 args = parser.parse_known_args()[0]
+
+# 设置 CUDA
 args.cuda =  not args.no_cuda and torch.cuda.is_available()
 device = torch.device(('cuda:{}' if torch.cuda.is_available() else 'cpu').format(args.device_id))
 
 print(args)
 
-
-#%%
 from torch_geometric.utils import to_undirected
 import torch_geometric.transforms as T
 transform = T.Compose([T.NormalizeFeatures()])
 
+# root 参数指定了数据集的下载和存储位置
+# name 参数则指定了要加载的具体数据集
 if(args.dataset == 'Cora' or args.dataset == 'Citeseer' or args.dataset == 'Pubmed'):
     dataset = Planetoid(root='./data/', \
                         name=args.dataset,\
